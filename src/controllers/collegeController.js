@@ -1,86 +1,64 @@
-// const mongoose = require("")
 const CollegeModel = require("../models/collegeModel")
 const InternModel = require("../models/internModel")
-const {isValid, isValidName,isValidCollegeName} = require("../validation/validation")
+const { isValid, isValidName, isValidCollegeName } = require("../validation/validation")
 
+//================= Create College For Post API With Validation ====================//
 const createCollege = async (req, res) => {
     try {
         let data = req.body
 
         if (Object.keys(data).length === 0) {
-            return res.status(400).send({
-                status: false,
-                message: "Provide all fields..!!"
+            return res.status(400).send({status: false, message: "Provide all fields..!!"
             })
         }
-
         if (!isValid(data.name)) {
-            return res.status(400).send({
-                status: false,
-                message: "Name is required..!!"
+            return res.status(400).send({status: false, message: "Name is required..!!"
             })
         }
         data.name = data.name.trim()
         if (!isValidName(data.name)) {
-            return res.status(400).send({
-                status: false,
-                message: "Name should be string..!!"
+            return res.status(400).send({status: false, message: "Name should be string..!!"
             })
         }
-
         const checkDuplicateName = await CollegeModel.findOne({
             name: data.name
         })
         if (checkDuplicateName) {
-            return res.status(400).send({
-                status: false,
-                message: "Name is already used..!!"
+            return res.status(400).send({status: false, message: "Name is already used..!!"
             })
         }
-
         if (!isValid(data.fullName)) {
-            return res.status(400).send({
-                status: false,
-                message: "Full Name is required..!!"
+            return res.status(400).send({status: false, message: "Full Name is required..!!"
             })
         }
         data.fullName = data.fullName.trim()
         if (!isValidCollegeName(data.fullName)) {
             return res.status(400).send({
-                status: false,
-                message: "plz use only alphabates and special characters likes(,.'-) in full name..!!"
+                status: false, message: "plz use only alphabates and special characters likes(,.'-) in full name..!!"
             })
         }
-
         if (!isValid(data.logoLink)) {
-            return res.status(400).send({
-                status: false,
-                message: "Logo Link is required..!!"
+            return res.status(400).send({status: false, message: "Logo Link is required..!!"
             })
         }
         data.logoLink = data.logoLink.trim()
 
         const savedData = await CollegeModel.create(data)
-        return res.status(201).send({
-            status: true,
-            data: savedData
+        return res.status(201).send({status: true, data: savedData
         })
     } catch (error) {
-        return res.status(500).send({
-            status: false,
-            message: error.message
+        return res.status(500).send({status: false, message: error.message
         })
     }
 }
 
-const collegeDetails = async function(req, res) {
+//==================== Get All College Details By get API With Validation =================//
+const collegeDetails = async function (req, res) {
     try {
         let collegeName = req.query.collegeName
 
-        if(!collegeName){
-            return res.status(400).send({
-                status: false,
-                message: "Plz enter College Name..!!"
+        if (!collegeName) {
+            return res.status(400).send({status: false, message: "Plz enter College Name..!!"
             })
         }
 
@@ -94,9 +72,7 @@ const collegeDetails = async function(req, res) {
         })
 
         if (!findCollege) {
-            return res.status(404).send({
-                status: false,
-                message: "No such college"
+            return res.status(404).send({status: false, message: "No such college"
             })
         }
 
@@ -111,13 +87,9 @@ const collegeDetails = async function(req, res) {
         })
 
         if (interns.length < 1) {
-            return res.status(404).send({
-                status: false,
-                message: "no intern applied for this college"
+            return res.status(404).send({status: false, message: "no intern applied for this college"
             })
         }
-        //findCollege['interns'] = "interns"
-        //console.log(findCollege)
 
         let details = {
             name: findCollege.name,
@@ -125,19 +97,15 @@ const collegeDetails = async function(req, res) {
             logoLink: findCollege.logoLink,
             interns: interns
         }
+        findCollege._doc["interns"] = interns
 
-        return res.status(200).send({
-            status: true,
-            data: details
+        return res.status(200).send({status: true, data: findCollege
         })
 
     } catch (error) {
-        return res.status(500).send({
-            status: false,
-            message: error.message
+        return res.status(500).send({status: false, message: error.message
         })
     }
 }
-
 module.exports.createCollege = createCollege
 module.exports.collegeDetails = collegeDetails

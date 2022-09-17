@@ -3,12 +3,13 @@ const router = express.Router();
 const collegeController = require("../controllers/collegeController")
 const internController = require("../controllers/internController")
 
-//College
-router.post("/colleges", collegeController.createCollege) //Create College
-router.get("/collegeDetails", collegeController.collegeDetails) //College Details
+//================= Create College Post API =====================//
+router.post("/colleges", collegeController.createCollege)
 
-//Intern
-router.post("/interns", internController.createIntern) //Create Intern                                                         
+//============ Create Interns Post API ========================//
+router.post("/interns", internController.createIntern)
 
+//=============== Get College Details get API =================//
+router.get("/collegeDetails", collegeController.collegeDetails)
 
 module.exports = router;
